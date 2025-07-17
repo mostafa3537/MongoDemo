@@ -6,20 +6,19 @@ using MongoDemo.Models;
 
 namespace MongoDemo.Services;
 
-public class BooksService
+public class BooksService(IMongoDatabase database)
 {
-    private readonly BookStoreContext _context;
+    private readonly BookStoreContext _context = BookStoreContext.Create(database);
 
-    public BooksService(IMongoDatabase database)
+    public async Task<List<Book>> GetAsync()
     {
-        _context = BookStoreContext.Create(database);
+        return await _context.Books.ToListAsync();
     }
 
-    public async Task<List<Book>> GetAsync() =>
-        await _context.Books.ToListAsync();
-
-    public async Task<Book?> GetAsync(string id) =>
-        await _context.Books.FindAsync(id);
+    public async Task<Book?> GetAsync(string id)
+    {
+        return await _context.Books.FindAsync(id);
+    }
 
     public async Task CreateAsync(Book newBook)
     {
